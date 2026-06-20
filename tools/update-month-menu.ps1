@@ -131,8 +131,14 @@ function Ensure-OcrReady() {
 
 Ensure-OcrReady
 
-$listHtml = Get-Text $listUrl
-$post = Get-LatestMenuPost $listHtml
+try {
+    $listHtml = Get-Text $listUrl
+    $post = Get-LatestMenuPost $listHtml
+}
+catch {
+    Write-Warning "Could not discover latest MonthMenu post. Keeping existing checked-in menu data. $_"
+    return
+}
 $monthKey = "{0:D4}-{1:D2}" -f $post.year, $post.month
 $monthDirName = "menu-" + $monthKey
 $monthDir = Join-Path (Join-Path $root "source-data") $monthDirName
