@@ -1,0 +1,14 @@
+{
+    "title":  "2026년 6월 식단표",
+    "sourceUrl":  "http://www.shlu.or.kr/2015/MonthMenu/91835",
+    "year":  2026,
+    "month":  6,
+    "monthKey":  "2026-06",
+    "updatedAt":  "2026-06-20 14:06:05",
+    "days":  30,
+    "generatedFiles":  [
+                           "meal_2026_06.json",
+                           "meal_current.json"
+                       ],
+    "imageCount":  5
+}

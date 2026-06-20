@@ -1,0 +1,14 @@
+apply plugin: "com.android.application"
+
+android {
+    namespace "kr.co.samho.bus"
+    compileSdk 35
+
+    defaultConfig {
+        applicationId "kr.co.samho.bus"
+        minSdk 23
+        targetSdk 35
+        versionCode 1
+        versionName "0.1.0"
+    }
+}

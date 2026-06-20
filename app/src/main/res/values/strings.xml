@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">오늘식단</string>
+    <string name="remote_menu_url">https://niceasia1-cloud.github.io/today-meal-menu/data/meal_current.json</string>
+</resources>

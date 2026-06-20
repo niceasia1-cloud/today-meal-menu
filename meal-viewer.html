@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>오늘식단 - 2026년 6월</title>
+  <style>
+    :root {
+      --bg: #f6f8fa;
+      --panel: #ffffff;
+      --line: #d8dee8;
+      --text: #1b232b;
+      --muted: #5c6773;
+      --brand: #1c718d;
+      --brand-dark: #14566d;
+      --chip: #eaf0f6;
+      --warn: #9a5a00;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      background: rgba(246, 248, 250, 0.96);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(8px);
+    }
+    .wrap {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 0 12px;
+    }
+    h1 {
+      margin: 0;
+      font-size: 25px;
+      line-height: 1.2;
+    }
+    .status {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    select, input {
+      height: 38px;
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--text);
+      border-radius: 6px;
+      padding: 0 10px;
+      font-size: 14px;
+    }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 0 0 12px;
+    }
+    button {
+      height: 36px;
+      border: 0;
+      border-radius: 18px;
+      padding: 0 14px;
+      background: var(--chip);
+      color: #313d4a;
+      font-size: 14px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    button.active {
+      background: var(--brand);
+      color: white;
+      font-weight: 700;
+    }
+    main {
+      padding: 18px 0 28px;
+    }
+    .today {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+    }
+    .card h2, .card h3 {
+      margin: 0;
+      line-height: 1.25;
+    }
+    .card h2 { font-size: 20px; }
+    .card h3 { font-size: 16px; }
+    .meal-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .meal {
+      min-height: 160px;
+      background: #fbfcfd;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+    }
+    .meal strong {
+      display: block;
+      color: var(--brand-dark);
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+    li {
+      margin: 4px 0;
+      line-height: 1.35;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
+    }
+    .note {
+      color: var(--warn);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .month {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .day {
+      min-height: 120px;
+      cursor: pointer;
+    }
+    .day.selected {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 2px rgba(28, 113, 141, 0.14);
+    }
+    .day-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .preview {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .empty {
+      color: var(--muted);
+      font-size: 14px;
+    }
+    @media (max-width: 900px) {
+      .top, .today { display: block; }
+      .controls { justify-content: flex-start; margin-top: 12px; }
+      .meal-grid { grid-template-columns: 1fr; }
+      .month { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 520px) {
+      .wrap { width: min(100% - 20px, 1180px); }
+      .month { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="top">
+        <div>
+          <h1>오늘식단</h1>
+          <div class="status">2026년 6월 식단표 · 이미지 OCR 데이터</div>
+        </div>
+        <div class="controls">
+          <select id="mealSelect" aria-label="식사 선택">
+            <option value="all">전체</option>
+            <option value="breakfast">조식</option>
+            <option value="lunch">중식</option>
+            <option value="dinner">석식</option>
+          </select>
+          <input id="search" type="search" placeholder="메뉴 검색">
+        </div>
+      </div>
+      <div id="dateTabs" class="tabs"></div>
+    </div>
+  </header>
+  <main class="wrap">
+    <section class="today">
+      <div id="selectedCard" class="card"></div>
+      <div class="card">
+        <h3>데이터 상태</h3>
+        <p class="note">원본 이미지 글자가 작아 OCR 오탈자가 일부 남을 수 있습니다. 각 날짜 카드에는 자동 추출된 텍스트가 들어 있으며, 검수 후 JSON을 보정하면 앱과 이 화면에 함께 반영됩니다.</p>
+      </div>
+    </section>
+    <section id="monthGrid" class="month"></section>
+  </main>
+
+  <script>
+    const weekdayMap = { Sun: "일", Mon: "월", Tue: "화", Wed: "수", Thu: "목", Fri: "금", Sat: "토" };
+    const mealLabels = { breakfast: "조식", lunch: "중식", dinner: "석식" };
+    let days = [];
+    let selectedDate = "";
+
+    async function loadData() {
+      const response = await fetch("app/src/main/assets/meal_current.json");
+      days = await response.json();
+      const today = new Date();
+      const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+      selectedDate = days.some(day => day.date === todayKey) ? todayKey : days[0].date;
+      render();
+    }
+
+    function orderedDays() {
+      const selected = days.find(day => day.date === selectedDate);
+      return selected ? [selected, ...days.filter(day => day.date !== selectedDate)] : days;
+    }
+
+    function render() {
+      renderTabs();
+      renderSelected();
+      renderMonth();
+    }
+
+    function renderTabs() {
+      const tabs = document.getElementById("dateTabs");
+      tabs.innerHTML = "";
+      for (const day of orderedDays()) {
+        const button = document.createElement("button");
+        button.className = day.date === selectedDate ? "active" : "";
+        button.textContent = day.date.slice(5);
+        button.onclick = () => {
+          selectedDate = day.date;
+          render();
+        };
+        tabs.appendChild(button);
+      }
+    }
+
+    function renderSelected() {
+      const day = days.find(item => item.date === selectedDate);
+      const card = document.getElementById("selectedCard");
+      if (!day) {
+        card.innerHTML = `<p class="empty">선택한 날짜의 식단이 없습니다.</p>`;
+        return;
+      }
+      const mealMode = document.getElementById("mealSelect").value;
+      const mealKeys = mealMode === "all" ? ["breakfast", "lunch", "dinner"] : [mealMode];
+      card.innerHTML = `
+        <h2>${day.date} (${weekdayMap[day.weekday] || day.weekday})</h2>
+        <div class="meal-grid">
+          ${mealKeys.map(key => mealBlock(day.meals[key], key)).join("")}
+        </div>
+      `;
+    }
+
+    function mealBlock(meal, key) {
+      const items = filteredItems(meal);
+      return `
+        <div class="meal">
+          <strong>${mealLabels[key]}</strong>
+          ${items.length ? `<ul>${items.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>` : `<p class="empty">표시할 메뉴가 없습니다.</p>`}
+        </div>
+      `;
+    }
+
+    function renderMonth() {
+      const grid = document.getElementById("monthGrid");
+      grid.innerHTML = "";
+      for (const day of orderedDays()) {
+        const div = document.createElement("article");
+        div.className = `card day${day.date === selectedDate ? " selected" : ""}`;
+        div.onclick = () => {
+          selectedDate = day.date;
+          render();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        };
+        div.innerHTML = `
+          <div class="day-title">
+            <span>${day.date.slice(5)}</span>
+            <span>${weekdayMap[day.weekday] || day.weekday}</span>
+          </div>
+          <div class="preview">${preview(day)}</div>
+        `;
+        grid.appendChild(div);
+      }
+    }
+
+    function preview(day) {
+      const mealMode = document.getElementById("mealSelect").value;
+      const mealKeys = mealMode === "all" ? ["breakfast", "lunch", "dinner"] : [mealMode];
+      return mealKeys.map(key => `${mealLabels[key]}: ${filteredItems(day.meals[key]).slice(0, 3).join(" · ") || "-"}`).join("<br>");
+    }
+
+    function filteredItems(meal) {
+      if (!meal) return [];
+      const query = document.getElementById("search").value.trim().toLowerCase();
+      const items = meal.items || [];
+      return query ? items.filter(item => item.toLowerCase().includes(query)) : items;
+    }
+
+    function escapeHtml(value) {
+      return value.replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[char]));
+    }
+
+    document.getElementById("mealSelect").addEventListener("change", render);
+    document.getElementById("search").addEventListener("input", render);
+    loadData().catch(error => {
+      document.getElementById("selectedCard").innerHTML = `<p class="empty">데이터를 불러오지 못했습니다: ${escapeHtml(error.message)}</p>`;
+    });
+  </script>
+</body>
+</html>
