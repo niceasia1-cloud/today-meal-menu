@@ -1,4 +1,4 @@
-$ErrorActionPreference = "Stop"
+﻿$ErrorActionPreference = "Stop"
 
 $root = Split-Path -Parent $PSScriptRoot
 $sourceBase = "http://www.shlu.or.kr"
@@ -10,12 +10,19 @@ $tessdata = Join-Path $root "tools\tessdata"
 Add-Type -AssemblyName System.Drawing
 
 function Get-Text($url) {
-    $response = Invoke-WebRequest -Uri $url -UseBasicParsing
-    return $response.Content
+    $client = New-Object System.Net.WebClient
+    $client.Encoding = [System.Text.Encoding]::UTF8
+    $client.Headers.Add("User-Agent", "today-meal-menu-updater/1.0")
+    try {
+        return $client.DownloadString($url)
+    }
+    finally {
+        $client.Dispose()
+    }
 }
 
 function Get-LatestMenuPost($html) {
-    $match = [regex]::Match($html, '<a href="(?<href>/2015/MonthMenu/\d+)" class="subject">(?<title>[^<]+)</a>')
+    $match = [regex]::Match($html, 'href="(?<href>/2015/MonthMenu/\d+)"[^>]*class="subject"[^>]*>\s*(?<title>[^<]+)\s*</a>', [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
     if (-not $match.Success) {
         throw "Could not find latest MonthMenu post."
     }
@@ -33,7 +40,6 @@ function Get-LatestMenuPost($html) {
         month = [int]$monthMatch.Groups[1].Value
     }
 }
-
 function Get-ImageUrls($html) {
     $urls = New-Object System.Collections.Generic.List[string]
     $matches = [regex]::Matches($html, '<img\s+src="(?<src>[^"]+)"')
